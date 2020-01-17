@@ -17,7 +17,7 @@ export const isBoyan = async ({
 }) => {
   const url = await bot.telegram.getFileLink(fileId)
   const buffer = await request(url, { method: 'GET', responseType: 'buffer' })
-  const hash = await imageHash.hash(buffer.data, 10, 'hex')
+  const hash = await imageHash.hash(buffer.data, 64, 'base64')
   const boyan = await getCollection('boyans').findOne({
     chat_id: chatId,
     picture_hash: hash.hash
