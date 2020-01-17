@@ -50,10 +50,10 @@ async function tryBoyan (ctx, photo) {
                   text: 'source',
                   url: `https://t.me/${ctx.chat.username ? ctx.chat.username : ctx.chat.id}/${boyan.message_id}`
                 },
-                {
-                  text: 'show stats',
-                  callback_data: `stats:${ctx.from.id}`
-                }
+                // {
+                //   text: 'show stats',
+                //   callback_data: `stats:${ctx.from.id}`
+                // }
               ]
             ]
           }
