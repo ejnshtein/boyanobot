@@ -10,7 +10,8 @@ composer.on(
   'photo',
   only('supergroup', 'group'),
   async ctx => {
-    return tryBoyan(ctx, ctx.message.photo.pop())
+    console.log(ctx.message.photo)
+    return tryBoyan(ctx, ctx.message.photo.shift())
   }
 )
 
@@ -19,6 +20,7 @@ composer.on(
   only('supergroup', 'group'),
   Composer.optional(
     (ctx) => {
+      console.log(ctx.message.document)
       return ctx.message.document.mime_type.includes('image')
     },
     async ctx => {

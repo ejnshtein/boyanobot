@@ -1,5 +1,5 @@
 import { getCollection, bot } from '../core/index.js'
-import imageHash from 'node-image-hash'
+import hasha from 'hasha'
 import request from '../lib/request.js'
 
 // imageHash
@@ -17,10 +17,10 @@ export const isBoyan = async ({
 }) => {
   const url = await bot.telegram.getFileLink(fileId)
   const buffer = await request(url, { method: 'GET', responseType: 'buffer' })
-  const hash = await imageHash.hash(buffer.data, 64, 'base64')
+  const hash = await hasha.async(buffer.data, { encoding: 'hex', algorithm: 'sha512' })
   const boyan = await getCollection('boyans').findOne({
     chat_id: chatId,
-    picture_hash: hash.hash
+    picture_hash: hash
   })
   if (boyan) {
     await getCollection('boyans').create({
@@ -35,7 +35,7 @@ export const isBoyan = async ({
       chat_id: chatId,
       message_id: messageId,
       from,
-      picture_hash: hash.hash
+      picture_hash: hash
     })
     return false
   }
