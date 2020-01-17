@@ -17,7 +17,8 @@ composer.command(
               $match: {
                 original: {
                   $exists: true
-                }
+                },
+                chat_id: ctx.chat.id
               }
             },
             {
@@ -52,7 +53,7 @@ composer.command(
         .exec()
 
       await ctx.reply(
-        `ТОП 10 баянистов чата ${ctx.chat.title}!\n${boyans.map((user, id) => `${id + 1} <a href="tg://user?id=${user.id}">${user.from.first_name}${user.from.last_name ? ` ${user.from.last_name}` : ''}</a> с ${user.chat_boyans.length} баян${user.chat_boyans.length > 1 ? 'анами' : 'ом'}` )}`,
+        `ТОП 10 баянистов чата ${ctx.chat.title}!\n${boyans.map((user, id) => `${id + 1} <a href="tg://user?id=${user.id}">${user.from.first_name}${user.from.last_name ? ` ${user.from.last_name}` : ''}</a> с ${user.chat_boyans.length} баян${user.chat_boyans.length > 1 ? 'анами' : 'ом'}`).join('\n')}`,
         {
           parse_mode: 'HTML'
         }
