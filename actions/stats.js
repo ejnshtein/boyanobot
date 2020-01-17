@@ -19,7 +19,7 @@ composer.action(
         .countDocuments()
 
       await ctx.answerCbQuery(
-        `У этого пользователя ${boyansCount} баянов в этом чате!`,
+        `У этого пользователя ${boyansCount} баян${boyansCount > 1 ? 'ов' : ''} в этом чате!`,
         true
       )
     } catch (e) {
