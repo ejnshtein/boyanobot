@@ -1,6 +1,6 @@
 {
   "name": "boyanobot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,10 +16,10 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^0.2.3",
-    "hasha": "^5.1.0",
+    "imghash": "0.0.6",
     "leven": "^3.1.0",
-    "mongoose": "^5.8.7",
-    "telegraf-esm": "^1.0.1-b",
+    "mongoose": "^5.8.10",
+    "telegraf-esm": "^1.0.2",
     "yaml": "^1.7.2"
   },
   "devDependencies": {

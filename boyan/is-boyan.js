@@ -1,7 +1,25 @@
-import { getCollection, bot } from '../core/index.js'
-import hasha from 'hasha'
-// import leven from 'leven'
+import { bot } from '../core/index.js'
+import collection from '../core/database/index.js'
+import imghash from 'imghash'
+import leven from 'leven'
 import request from '../lib/request.js'
+import fs from 'fs'
+import path from 'path'
+
+const saveImage = async url => {
+  const filePath = `./.tmp/${path.parse(url).name}`
+  const { data: stream } = await request(url, { method: 'GET', responseType: 'stream' })
+  const write = fs.createWriteStream(filePath)
+  return new Promise((resolve, reject) => {
+    stream.pipe(write)
+    write.once('error', reject)
+    write.once('close', () => resolve(filePath))
+  })
+}
+
+const deleteImage = async filePath => {
+  return fs.promises.unlink(filePath)
+}
 
 export const isBoyan = async ({
   chat: { id: chatId },
@@ -10,14 +28,23 @@ export const isBoyan = async ({
   photo: { file_id: fileId }
 }) => {
   const url = await bot.telegram.getFileLink(fileId)
-  const buffer = await request(url, { method: 'GET', responseType: 'buffer' })
-  const hash = await hasha.async(buffer.data, { encoding: 'hex', algorithm: 'md5' })
-  const boyan = await getCollection('boyans').findOne({
-    chat_id: chatId,
-    picture_hash: hash
-  }).exec()
+  const filePath = await saveImage(url)
+  const hash = await imghash.hash(filePath)
+  const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash')
+
+  const [boyan] = boyans.filter(({ picture_hash }) => {
+    const diff = leven(picture_hash, hash)
+    return diff <= 12
+  })
+
+  try {
+    await deleteImage(filePath)
+  } catch (e) {
+    console.log(e)
+  }
+
   if (boyan) {
-    await getCollection('boyans').create({
+    await collection('boyans').create({
       chat_id: chatId,
       message_id: messageId,
       from,
@@ -25,7 +52,7 @@ export const isBoyan = async ({
     })
     return boyan
   } else {
-    await getCollection('boyans').create({
+    await collection('boyans').create({
       chat_id: chatId,
       message_id: messageId,
       from,
