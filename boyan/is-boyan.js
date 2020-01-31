@@ -30,7 +30,7 @@ export const isBoyan = async ({
   const url = await bot.telegram.getFileLink(fileId)
   const filePath = await saveImage(url)
   const hash = await imghash.hash(filePath)
-  const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash')
+  const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 
   const [boyan] = boyans.filter(({ picture_hash }) => {
     const diff = leven(picture_hash, hash)
@@ -44,6 +44,7 @@ export const isBoyan = async ({
   }
 
   if (boyan) {
+    // console.log(boyan, chatId, messageId, from)
     await collection('boyans').create({
       chat_id: chatId,
       message_id: messageId,
