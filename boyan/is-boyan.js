@@ -3,22 +3,15 @@ import collection from '../core/database/index.js'
 import imghash from 'imghash'
 import leven from 'leven'
 import request from '../lib/request.js'
-import fs from 'fs'
-import path from 'path'
 
-const saveImage = async url => {
-  const filePath = `./.tmp/${path.parse(url).name}`
+const streamToBuffer = async url => {
   const { data: stream } = await request(url, { method: 'GET', responseType: 'stream' })
-  const write = fs.createWriteStream(filePath)
   return new Promise((resolve, reject) => {
-    stream.pipe(write)
-    write.once('error', reject)
-    write.once('close', () => resolve(filePath))
+    const buffers = []
+    stream.on('data', (data) => buffers.push(Buffer.from(data)))
+    stream.once('error', reject)
+    stream.once('end', () => resolve(Buffer.concat(buffers)))
   })
-}
-
-const deleteImage = async filePath => {
-  return fs.promises.unlink(filePath)
 }
 
 export const isBoyan = async ({
@@ -28,20 +21,15 @@ export const isBoyan = async ({
   photo: { file_id: fileId }
 }) => {
   const url = await bot.telegram.getFileLink(fileId)
-  const filePath = await saveImage(url)
-  const hash = await imghash.hash(filePath)
+  const buffer = await streamToBuffer(url)
+  const hash = await imghash.hash(buffer, 16)
   const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 
-  const [boyan] = boyans.filter(({ picture_hash }) => {
+  const boyan = boyans.find(({ picture_hash }) => {
     const diff = leven(picture_hash, hash)
+    // console.log(diff)
     return diff <= 12
   })
-
-  try {
-    await deleteImage(filePath)
-  } catch (e) {
-    console.log(e)
-  }
 
   if (boyan) {
     // console.log(boyan, chatId, messageId, from)
