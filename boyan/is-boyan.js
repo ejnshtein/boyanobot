@@ -18,16 +18,15 @@ export const isBoyan = async ({
   chat: { id: chatId },
   message: { message_id: messageId },
   from,
-  photo: { file_id: fileId }
+  url
 }) => {
-  const url = await bot.telegram.getFileLink(fileId)
   const buffer = await streamToBuffer(url)
-  const hash = await imghash.hash(buffer, 16)
+  const hash = await imghash.hash(buffer, 32)
   const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 
   const boyan = boyans.find(({ picture_hash }) => {
     const diff = leven(picture_hash, hash)
-    // console.log(diff)
+    // console.log(diff, ' ', picture_hash, ' ', hash)
     return diff <= 12
   })
 

@@ -1,8 +1,9 @@
 import { Composer } from 'telegraf-esm'
-import { bot, getCollection } from '../core/index.js'
+import { bot } from '../core/index.js'
 import { only } from '../middlewares/index.js'
 import { isBoyan, list, user, getRandom } from '../boyan/index.js'
-import { templates } from '../lib/index.js'
+import { templates, request } from '../lib/index.js'
+import { isUrlWithPhoto } from './on-link.js'
 
 const composer = new Composer()
 
@@ -12,6 +13,39 @@ composer.on(
   async ctx => {
     return tryBoyan(ctx, ctx.message.photo.pop())
   }
+)
+
+const isUrlPhoto = async (ctx) => {
+  try {
+    const { headers } = await request(ctx.match[1], { responseType: 'only meta' })
+    if (headers['content-type'] && headers['content-type'].includes('image')) {
+      ctx.state.url = ctx.match[1]
+      return true
+    } else {
+      return false
+    }
+  } catch (e) {
+    return false
+  }
+}
+
+const urlBoyan = async ctx => {
+  return tryBoyan(ctx, ctx.state.url)
+}
+
+composer.hears(
+  /((http|https)\S+\.(jpg|png))/i,
+  Composer.optional(
+    isUrlPhoto,
+    urlBoyan
+  )
+)
+composer.hears(
+  /((http|https)\S+)/i,
+  Composer.optional(
+    isUrlWithPhoto,
+    urlBoyan
+  )
 )
 
 composer.on(
@@ -27,14 +61,15 @@ composer.on(
   )
 )
 
-async function tryBoyan (ctx, photo) {
+export async function tryBoyan (ctx, file) {
   try {
+    const url = typeof file === 'string' ? file : await bot.telegram.getFileLink(file)
     const boyan = await isBoyan(
       {
         chat: ctx.chat,
         message: ctx.message,
         from: ctx.from,
-        photo: photo
+        url
       }
     )
     if (boyan) {
@@ -58,6 +93,7 @@ async function tryBoyan (ctx, photo) {
     }
   } catch (e) {
     console.log(e)
+    if (/wrong file id/i.test(e.message)) { return } // Telegram broke some file id, so...
     return ctx.reply(templates.error(e))
   }
 }
