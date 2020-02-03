@@ -53,7 +53,7 @@ composer.on(
   only('supergroup', 'group'),
   Composer.optional(
     (ctx) => {
-      return ctx.message.document.mime_type.includes('image')
+      return ctx.message.document.mime_type.includes('image') && ctx.message.document.thumb
     },
     async ctx => {
       return tryBoyan(ctx, ctx.message.document.thumb)
