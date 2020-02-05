@@ -14,6 +14,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@ejnshtein/smol-request": "^1.0.3-b",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^0.2.3",

@@ -2,7 +2,8 @@ import { Composer } from 'telegraf-esm'
 import { bot } from '../core/index.js'
 import { only } from '../middlewares/index.js'
 import { isBoyan, list, user, getRandom } from '../boyan/index.js'
-import { templates, request } from '../lib/index.js'
+import { templates } from '../lib/index.js'
+import request from '@ejnshtein/smol-request'
 import { isUrlWithPhoto } from './on-link.js'
 
 const composer = new Composer()
@@ -17,7 +18,7 @@ composer.on(
 
 const isUrlPhoto = async (ctx) => {
   try {
-    const { headers } = await request(ctx.match[1], { responseType: 'only meta' })
+    const { headers } = await request(ctx.match[1], { responseType: 'headers' })
     if (headers['content-type'] && headers['content-type'].includes('image')) {
       ctx.state.url = ctx.match[1]
       return true

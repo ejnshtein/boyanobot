@@ -1,18 +1,7 @@
-import { bot } from '../core/index.js'
 import collection from '../core/database/index.js'
 import imghash from 'imghash'
 import leven from 'leven'
-import request from '../lib/request.js'
-
-const streamToBuffer = async url => {
-  const { data: stream } = await request(url, { method: 'GET', responseType: 'stream' })
-  return new Promise((resolve, reject) => {
-    const buffers = []
-    stream.on('data', (data) => buffers.push(Buffer.from(data)))
-    stream.once('error', reject)
-    stream.once('end', () => resolve(Buffer.concat(buffers)))
-  })
-}
+import request from '@ejnshtein/smol-request'
 
 export const isBoyan = async ({
   chat: { id: chatId },
@@ -20,7 +9,7 @@ export const isBoyan = async ({
   from,
   url
 }) => {
-  const buffer = await streamToBuffer(url)
+  const { data: buffer } = await request(url, { responseType: 'buffer' })
   const hash = await imghash.hash(buffer, 32)
   const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 

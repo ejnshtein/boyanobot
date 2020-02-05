@@ -1,4 +1,4 @@
-import { request } from '../lib/index.js'
+import request from '@ejnshtein/smol-request'
 import cheerio from 'cheerio'
 
 const trustedDomains = [
