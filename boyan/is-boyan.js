@@ -15,8 +15,8 @@ export const isBoyan = async ({
 
   const boyan = boyans.find(({ picture_hash }) => {
     const diff = leven(picture_hash, hash)
-    // console.log(diff, ' ', picture_hash, ' ', hash)
-    return diff <= 12
+    // console.log(diff)
+    return diff <= 8
   })
 
   if (boyan) {
