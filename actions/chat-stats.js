@@ -15,21 +15,15 @@ composer.command(
           [
             {
               $match: {
-                original: {
-                  $exists: true
-                },
+                original: { $exists: true },
                 chat_id: ctx.chat.id
               }
             },
             {
               $group: {
                 _id: '$from.id',
-                boyans: {
-                  $push: '$_id'
-                },
-                from: {
-                  $first: '$from'
-                }
+                boyans: { $push: '$_id' },
+                from: { $first: '$from' }
               }
             },
             {
@@ -54,12 +48,12 @@ composer.command(
               }
             },
             {
-              $limit: 10
-            },
-            {
               $sort: {
                 boyan_count: -1
               }
+            },
+            {
+              $limit: 10
             }
           ]
         )
