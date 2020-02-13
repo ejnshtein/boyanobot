@@ -5,6 +5,38 @@ import request from '@ejnshtein/smol-request'
 import { performance } from 'perf_hooks'
 import argv from '../lib/argv.js'
 
+const findBoyan = (boyans, hash) => {
+  for (let i = 0; i < boyans.length; i++) {
+    const b = boyans[i]
+    const diff = leven(b.picture_hash, hash)
+    if (diff <= 10) {
+      return b
+    }
+  }
+  return undefined
+}
+
+const isBoyanInDb = async (chat_id, hash, skip = 0) => {
+  const boyans = await collection('boyans')
+    .find(
+      { chat_id, picture_hash: { $exists: true } },
+      'picture_hash message_id'
+    )
+    .limit(1000)
+    .skip(skip)
+
+  const boyansLength = boyans.length
+
+  const boyan = findBoyan(boyans, hash)
+  if (boyans.length === 1000 && !boyan) {
+    return isBoyanInDb(chat_id, hash, skip + 1000)
+  }
+  return {
+    boyansLength: skip + boyansLength,
+    boyan
+  }
+}
+
 export const isBoyan = async ({
   chat: { id: chatId },
   message: { message_id: messageId },
@@ -13,36 +45,15 @@ export const isBoyan = async ({
 }) => {
   const { data: buffer } = await request(url, { responseType: 'buffer' })
   const hash = await imghash.hash(buffer, 32)
-  const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 
   const startTime = performance.now()
-  let boyan = null
-  for (let i = 0; i < boyans.length; i++) {
-    const b = boyans[i]
-    const { picture_hash } = b
-    const diff = leven(picture_hash, hash)
-    // if (diff < 20) {
-    //   console.log(diff)
-    // }
-    if (diff <= 10 && !boyan) {
-      boyan = b
-      break
-    }
-  }
-
-  // const boyan = boyans.find(({ picture_hash }) => {
-
-  //   const diff = leven(picture_hash, hash)
-  //   // if (diff < 20) {
-  //   //   console.log(diff)
-  //   // }
-  //   return diff <= 10
-  // })
-
+  const { boyansLength, boyan } = await isBoyanInDb(chatId, hash)
   const endTime = performance.now()
+
   if (argv('--debug')) {
-    console.log(`Processed ${boyans.length} boyans in ${endTime - startTime} ms.`)
+    console.log(`Processed ${boyansLength} boyans in ${endTime - startTime} ms.`)
   }
+
   if (boyan) {
     // console.log(boyan, chatId, messageId, from)
     await collection('boyans').create({
