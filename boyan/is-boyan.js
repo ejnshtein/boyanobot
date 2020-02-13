@@ -16,28 +16,28 @@ export const isBoyan = async ({
   const boyans = await collection('boyans').find({ chat_id: chatId, picture_hash: { $exists: true } }, 'picture_hash message_id')
 
   const startTime = performance.now()
-  // let boyan = null
-  // for (let i = 0; i < boyans.length; i++) {
-  //   const b = boyans[i]
-  //   const { picture_hash } = b
-  //   const diff = leven(picture_hash, hash)
-  //   // if (diff < 20) {
-  //   //   console.log(diff)
-  //   // }
-  //   if (diff <= 10 && !boyan) {
-  //     boyan = b
-  //     break
-  //   }
-  // }
-
-  const boyan = boyans.find(({ picture_hash }) => {
-
+  let boyan = null
+  for (let i = 0; i < boyans.length; i++) {
+    const b = boyans[i]
+    const { picture_hash } = b
     const diff = leven(picture_hash, hash)
     // if (diff < 20) {
     //   console.log(diff)
     // }
-    return diff <= 10
-  })
+    if (diff <= 10 && !boyan) {
+      boyan = b
+      break
+    }
+  }
+
+  // const boyan = boyans.find(({ picture_hash }) => {
+
+  //   const diff = leven(picture_hash, hash)
+  //   // if (diff < 20) {
+  //   //   console.log(diff)
+  //   // }
+  //   return diff <= 10
+  // })
 
   const endTime = performance.now()
   if (argv('--debug')) {
