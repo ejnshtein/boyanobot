@@ -9,7 +9,7 @@ const findBoyan = (boyans, hash) => {
   for (let i = 0; i < boyans.length; i++) {
     const b = boyans[i]
     const diff = leven(b.picture_hash, hash)
-    if (diff <= 10) {
+    if (diff <= 12) {
       return b
     }
   }
@@ -19,17 +19,23 @@ const findBoyan = (boyans, hash) => {
 const isBoyanInDb = async (chat_id, hash, skip = 0) => {
   const boyans = await collection('boyans')
     .find(
-      { chat_id, picture_hash: { $exists: true } },
+      {
+        chat_id,
+        picture_hash: {
+          $exists: true
+        }
+      },
       'picture_hash message_id'
     )
-    .limit(1000)
+    .sort({ _id: -1 })
+    .limit(500)
     .skip(skip)
 
   const boyansLength = boyans.length
 
   const boyan = findBoyan(boyans, hash)
-  if (boyans.length === 1000 && !boyan) {
-    return isBoyanInDb(chat_id, hash, skip + 1000)
+  if (boyans.length === 500 && !boyan) {
+    return isBoyanInDb(chat_id, hash, skip + 500)
   }
   return {
     boyansLength: skip + boyansLength,
