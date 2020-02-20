@@ -14,6 +14,11 @@ export const Chat = new Schema({
   title: {
     type: String,
     required: true
+  },
+  ignore_mode: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 }, {
   timestamps: {

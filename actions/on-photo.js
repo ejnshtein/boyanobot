@@ -4,12 +4,14 @@ import { only } from '../middlewares/index.js'
 import request from '@ejnshtein/smol-request'
 import { isUrlWithPhoto } from './on-link.js'
 import { tryBoyan } from '../boyan/try-boyan.js'
+import ignoreMode from '../middlewares/ignore-mode.js'
 
 const composer = new Composer()
 
 composer.on(
   'photo',
   only('supergroup', 'group'),
+  ignoreMode,
   async ctx => {
     // console.log(ctx.message)
     await tryBoyan(ctx, ctx.message.photo.pop())
@@ -52,10 +54,9 @@ composer.hears(
 composer.on(
   'document',
   only('supergroup', 'group'),
+  ignoreMode,
   Composer.optional(
-    (ctx) => {
-      return ctx.message.document.mime_type.includes('image') && ctx.message.document.thumb
-    },
+    (ctx) => ctx.message.document.mime_type.includes('image') && ctx.message.document.thumb,
     async ctx => {
       return tryBoyan(ctx, ctx.message.document.thumb)
     }
