@@ -1,4 +1,4 @@
-import { Composer } from 'telegraf-esm'
+import { Composer } from '@telegraf/core'
 import { bot, getCollection } from '../core/index.js'
 import { only } from '../middlewares/index.js'
 import { templates } from '../lib/index.js'

@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf-esm'
+import Telegraf from '@telegraf/core'
 import collection from './database/index.js'
 import logger from './database/logger.js'
 export const bot = new Telegraf(process.env.BOT_TOKEN)

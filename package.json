@@ -14,14 +14,15 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@ejnshtein/smol-request": "^1.0.3-b",
+    "@ejnshtein/smol-request": "^1.0.6",
+    "@telegraf/core": "^1.0.1",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^0.2.3",
+    "effector": "^20.12.0",
     "imghash": "0.0.6",
     "leven": "^3.1.0",
-    "mongoose": "^5.8.11",
-    "telegraf-esm": "^1.0.2",
+    "mongoose": "^5.9.1",
     "yaml": "^1.7.2"
   },
   "devDependencies": {

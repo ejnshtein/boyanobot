@@ -1,10 +1,9 @@
-import { Composer } from 'telegraf-esm'
+import { Composer } from '@telegraf/core'
 import { bot } from '../core/index.js'
 import { only } from '../middlewares/index.js'
-import { isBoyan, list, user, getRandom } from '../boyan/index.js'
-import { templates } from '../lib/index.js'
 import request from '@ejnshtein/smol-request'
 import { isUrlWithPhoto } from './on-link.js'
+import { tryBoyan } from '../boyan/try-boyan.js'
 
 const composer = new Composer()
 
@@ -12,7 +11,8 @@ composer.on(
   'photo',
   only('supergroup', 'group'),
   async ctx => {
-    return tryBoyan(ctx, ctx.message.photo.pop())
+    // console.log(ctx.message)
+    await tryBoyan(ctx, ctx.message.photo.pop())
   }
 )
 
@@ -61,42 +61,4 @@ composer.on(
     }
   )
 )
-
-export async function tryBoyan (ctx, file) {
-  try {
-    const url = typeof file === 'string' ? file : await bot.telegram.getFileLink(file)
-    const boyan = await isBoyan(
-      {
-        chat: ctx.chat,
-        message: ctx.message,
-        from: ctx.from,
-        url
-      }
-    )
-    if (boyan) {
-      return ctx.reply(
-        `${getRandom(user)} <a href="tg://user?id=${ctx.from.id}">${ctx.from.first_name}${ctx.from.last_name ? ` ${ctx.from.last_name}` : ''}</a> ${getRandom(list)}`,
-        {
-          reply_to_message_id: ctx.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: 'source',
-                  url: `https://t.me/${ctx.chat.username ? ctx.chat.username : ctx.chat.id}/${boyan.message_id}`
-                }
-              ]
-            ]
-          }
-        }
-      )
-    }
-  } catch (e) {
-    console.log(e)
-    if (/wrong file id/i.test(e.message)) { return } // Telegram broke some file id, so...
-    return ctx.reply(templates.error(e))
-  }
-}
-
 bot.use(composer.middleware())
