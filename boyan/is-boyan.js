@@ -54,7 +54,7 @@ const isBoyanFx = createEffect('is boyan', {
                 [
                   {
                     text: 'source',
-                    url: `https://t.me/${username || chatId}/${boyan.message_id}`
+                    url: `https://t.me/${username || `c/${`${chatId}`.slice(4)}`}/${boyan.message_id}`
                   },
                   {
                     text: 'mistake',
