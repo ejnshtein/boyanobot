@@ -24,7 +24,18 @@ composer.command(
           { $addToSet: { ignored_users: fromId } }
         )
         if (ok) {
-          return ctx.reply('Done.')
+          return ctx.reply('Done.', {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'ok',
+                    callback_data: 'delete'
+                  }
+                ]
+              ]
+            }
+          })
         }
         return ctx.reply('Something went wrong...')
       },
