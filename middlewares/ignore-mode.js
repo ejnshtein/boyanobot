@@ -1,6 +1,7 @@
 export default (ctx, next) => {
-  // console.log(ctx.state)
   if (!ctx.state.chat.ignore_mode) {
-    return next()
+    if (!ctx.state.chat.ignored_users.includes(ctx.from.id)) {
+      return next()
+    }
   }
 }

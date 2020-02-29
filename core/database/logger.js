@@ -11,10 +11,7 @@ export default async ({ updateType, chat, from, state }, next) => {
     state.user = await users.findOneAndUpdate(
       { id },
       { $set: userData },
-      {
-        new: true,
-        upsert: true
-      }
+      { new: true, upsert: true }
     )
   }
   if (['supergroup', 'group'].includes(chat.type)) {

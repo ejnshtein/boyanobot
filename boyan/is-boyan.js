@@ -120,6 +120,7 @@ function findBoyan (boyans, hash) {
 }
 
 async function isBoyanInDb (chat_id, hash, skip = 0) {
+  const limit = 2000
   const boyans = await collection('boyans')
     .find(
       {
@@ -131,14 +132,14 @@ async function isBoyanInDb (chat_id, hash, skip = 0) {
       'picture_hash message_id'
     )
     .sort({ _id: -1 })
-    .limit(500)
+    .limit(limit)
     .skip(skip)
 
   const boyansLength = boyans.length
 
   const boyan = findBoyan(boyans, hash)
-  if (boyans.length === 500 && !boyan) {
-    return isBoyanInDb(chat_id, hash, skip + 500)
+  if (boyans.length === limit && !boyan) {
+    return isBoyanInDb(chat_id, hash, skip + limit)
   }
   return {
     boyansLength: skip + boyansLength,

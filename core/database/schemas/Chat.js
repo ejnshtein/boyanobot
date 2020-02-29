@@ -19,6 +19,11 @@ export const Chat = new Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  ignored_users: {
+    type: [Number],
+    required: true,
+    default: []
   }
 }, {
   timestamps: {

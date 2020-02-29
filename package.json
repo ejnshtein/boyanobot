@@ -1,6 +1,6 @@
 {
   "name": "boyanobot",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,12 +14,12 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@ejnshtein/smol-request": "^1.0.6",
+    "@ejnshtein/smol-request": "^1.0.7",
     "@telegraf/core": "^1.0.1",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^0.2.3",
-    "effector": "^20.12.0",
+    "effector": "^20.12.1",
     "imghash": "0.0.6",
     "leven": "^3.1.0",
     "mongoose": "^5.9.1",

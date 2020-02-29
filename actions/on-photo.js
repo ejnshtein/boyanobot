@@ -38,6 +38,8 @@ const urlBoyan = async ctx => {
 
 composer.hears(
   /((http|https)\S+\.(jpg|png))/i,
+  only('supergroup', 'group'),
+  ignoreMode,
   Composer.optional(
     isUrlPhoto,
     urlBoyan
@@ -45,6 +47,8 @@ composer.hears(
 )
 composer.hears(
   /((http|https)\S+)/i,
+  only('supergroup', 'group'),
+  ignoreMode,
   Composer.optional(
     isUrlWithPhoto,
     urlBoyan
