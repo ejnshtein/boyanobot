@@ -60,7 +60,9 @@ composer.command(
         .exec()
 
       await ctx.reply(
-        `ТОП 10 баянистов чата ${ctx.chat.title}!\n${boyans.map((user, id) => `${id + 1} <a href="tg://user?id=${user.from.id}">${user.from.first_name}${user.from.last_name ? ` ${user.from.last_name}` : ''}</a> с ${user.boyan_count} баян${user.boyan_count > 1 ? 'анами' : 'ом'}`).join('\n')}`,
+        `ТОП 10 баянистов чата ${ctx.chat.title}!\n${boyans.map(
+          (user, id) => `${id + 1} ${user.from.first_name}${user.from.last_name ? ` ${user.from.last_name}` : ''} с ${user.boyan_count} баян${user.boyan_count > 1 ? 'анами' : 'ом'}`).join('\n')
+        }`,
         {
           parse_mode: 'HTML'
         }
